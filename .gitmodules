@@ -1,0 +1,12 @@
+[submodule "libtermkey"]
+	path = libtermkey
+	url = https://github.com/neovim/libtermkey.git
+[submodule "libvterm"]
+	path = libvterm
+	url = https://github.com/neovim/libvterm.git
+[submodule "neovim"]
+	path = neovim
+	url = https://github.com/neovim/neovim.git
+[submodule "unibilium"]
+	path = unibilium
+	url = https://github.com/mauke/unibilium.git
