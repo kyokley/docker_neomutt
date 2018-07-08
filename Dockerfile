@@ -46,6 +46,7 @@ RUN set -x \
                 xz \
         && apk add --no-cache gcc \
                 git \
+                cyrus-sasl \
         && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.tar.gz" -P /tmp/ \
         && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.zip" -P /tmp/ \
         && wget "https://github.com/neomutt/neomutt/releases/download/neomutt-${NEOMUTT_RELEASE}/neomutt-${NEOMUTT_RELEASE}-CHECKSUM" -P /tmp/ \
@@ -116,6 +117,6 @@ RUN apk del .build-deps \
 WORKDIR $HOME
 
 USER user
-RUN /usr/local/bin/nvim -c 'PlugInstall' -c 'q'
+RUN /usr/local/bin/nvim -c 'PlugInstall' -c 'qa'
 
 CMD ["neomutt"]
