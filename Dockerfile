@@ -1,7 +1,7 @@
 # Dockerfile for NeoMutt plus 'essentials'
 # Largely inspired by Jess Frazelle (@jessfraz)
 #
-FROM alpine
+FROM frolvlad/alpine-python3
 
 RUN apk --no-cache add \
         ca-certificates
@@ -36,6 +36,7 @@ RUN set -x \
                 linux-headers \
                 m4 \
                 make \
+                musl-dev \
                 ncurses-dev \
                 openssl \
                 openssl-dev \
@@ -44,7 +45,9 @@ RUN set -x \
                 tar \
                 unzip \
                 xz \
-        && apk add --no-cache gcc \
+                python3-dev \
+                gcc \
+        && apk add --no-cache \
                 git \
                 w3m \
         && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.tar.gz" -P /tmp/ \
@@ -78,45 +81,38 @@ RUN set -x \
         && apk add --no-cache --virtual .neomutt-rundeps \
                                         $runDeps \
                                         msmtp \
-                                        w3m \
-                                        python \
-                                        python-dev \
-                                        py-pip \
         && cd $HOME \
         && pip install neovim
 
 COPY nvim $HOME/.config/nvim
-
 COPY libtermkey /tmp/libtermkey
+COPY libvterm /tmp/libvterm
+COPY unibilium /tmp/unibilium
+COPY neovim /tmp/neovim
+
 RUN cd /tmp/libtermkey \
         && make \
         && make install \
-        && rm -rf /tmp/libtermkey
-
-COPY libvterm /tmp/libvterm
-RUN cd /tmp/libvterm \
-  && make \
-  && make install \
-  && rm -rf /tmp/libvterm
-
-COPY unibilium /tmp/unibilium
-RUN cd /tmp/unibilium \
-  && make \
-  && make install \
-  && rm -rf /tmp/unibilium
-
-COPY neovim /tmp/neovim
-RUN cd /tmp/neovim \
+        && rm -rf /tmp/libtermkey \
+        && cd /tmp/libvterm \
+        && make \
+        && make install \
+        && rm -rf /tmp/libvterm \
+        && cd /tmp/unibilium \
+        && make \
+        && make install \
+        && rm -rf /tmp/unibilium \
+        && cd /tmp/neovim \
         && make CMAKE_EXTRA_FLAGS=-DENABLE_JEMALLOC=OFF \
         && make install \
-        && rm -rf /tmp/neovim
-
-RUN apk del .build-deps \
-  && chown -R user:user $HOME
+        && rm -rf /tmp/neovim \
+        && mkdir -p /root/.nvim/plugged \
+        && /usr/local/bin/nvim -c 'PlugInstall' -c 'qa' \
+        && cp -r /root/.nvim/plugged $HOME/.nvim/plugged \
+        && apk del .build-deps \
+        && chown -R user:user $HOME
 
 WORKDIR $HOME
-
 USER user
-RUN /usr/local/bin/nvim -c 'PlugInstall' -c 'qa'
 
 CMD ["neomutt"]
