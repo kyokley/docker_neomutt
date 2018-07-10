@@ -46,6 +46,7 @@ RUN set -x \
                 xz \
         && apk add --no-cache gcc \
                 git \
+                w3m \
         && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.tar.gz" -P /tmp/ \
         && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.zip" -P /tmp/ \
         && wget "https://github.com/neomutt/neomutt/releases/download/neomutt-${NEOMUTT_RELEASE}/neomutt-${NEOMUTT_RELEASE}-CHECKSUM" -P /tmp/ \
