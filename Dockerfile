@@ -1,7 +1,7 @@
 # Dockerfile for NeoMutt plus 'essentials'
 # Largely inspired by Jess Frazelle (@jessfraz)
 #
-FROM frolvlad/alpine-python3
+FROM python:3.6-alpine
 
 RUN apk --no-cache add \
         ca-certificates
@@ -12,7 +12,7 @@ RUN adduser -u 1000 -D user \
 
 ENV LANG C.UTF-8
 
-ENV NEOMUTT_RELEASE 20180622
+ENV NEOMUTT_RELEASE 20180716
 
 RUN set -x \
         && apk add --no-cache --virtual .build-deps \
@@ -50,6 +50,7 @@ RUN set -x \
         && apk add --no-cache \
                 git \
                 w3m \
+                neovim \
         && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.tar.gz" -P /tmp/ \
         && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.zip" -P /tmp/ \
         && wget "https://github.com/neomutt/neomutt/releases/download/neomutt-${NEOMUTT_RELEASE}/neomutt-${NEOMUTT_RELEASE}-CHECKSUM" -P /tmp/ \
@@ -84,30 +85,10 @@ RUN set -x \
         && cd $HOME \
         && pip install neovim
 
+COPY mailcap $HOME/.mailcap
 COPY nvim $HOME/.config/nvim
-COPY libtermkey /tmp/libtermkey
-COPY libvterm /tmp/libvterm
-COPY unibilium /tmp/unibilium
-COPY neovim /tmp/neovim
-
-RUN cd /tmp/libtermkey \
-        && make \
-        && make install \
-        && rm -rf /tmp/libtermkey \
-        && cd /tmp/libvterm \
-        && make \
-        && make install \
-        && rm -rf /tmp/libvterm \
-        && cd /tmp/unibilium \
-        && make \
-        && make install \
-        && rm -rf /tmp/unibilium \
-        && cd /tmp/neovim \
-        && make CMAKE_EXTRA_FLAGS=-DENABLE_JEMALLOC=OFF \
-        && make install \
-        && rm -rf /tmp/neovim \
-        && mkdir -p /root/.nvim/plugged \
-        && /usr/local/bin/nvim -c 'PlugInstall' -c 'qa' \
+RUN mkdir -p /root/.nvim/plugged $HOME/.nvim \
+        && /usr/bin/nvim -c 'PlugInstall' -c 'qa' \
         && cp -r /root/.nvim/plugged $HOME/.nvim/plugged \
         && apk del .build-deps \
         && chown -R user:user $HOME
