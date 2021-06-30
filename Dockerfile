@@ -1,7 +1,7 @@
 # Dockerfile for NeoMutt plus 'essentials'
 # Largely inspired by Jess Frazelle (@jessfraz)
 #
-FROM python:3.6-alpine
+FROM python:3.9-alpine
 
 RUN apk --no-cache add \
         ca-certificates
@@ -12,7 +12,7 @@ RUN adduser -u 1000 -D user \
 
 ENV LANG C.UTF-8
 
-ENV NEOMUTT_RELEASE 20180716
+ENV NEOMUTT_RELEASE 20210205
 
 RUN set -x \
         && apk add --no-cache --virtual .build-deps \
@@ -50,18 +50,18 @@ RUN set -x \
         && apk add --no-cache \
                 git \
                 w3m \
-                neovim \
-        && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.tar.gz" -P /tmp/ \
-        && wget "https://github.com/neomutt/neomutt/archive/neomutt-${NEOMUTT_RELEASE}.zip" -P /tmp/ \
-        && wget "https://github.com/neomutt/neomutt/releases/download/neomutt-${NEOMUTT_RELEASE}/neomutt-${NEOMUTT_RELEASE}-CHECKSUM" -P /tmp/ \
+                neovim
+RUN wget "https://github.com/neomutt/neomutt/archive/refs/tags/${NEOMUTT_RELEASE}.tar.gz" -P /tmp/ \
+        && wget "https://github.com/neomutt/neomutt/archive/refs/tags/${NEOMUTT_RELEASE}.zip" -P /tmp/ \
+        && wget "https://github.com/neomutt/neomutt/releases/download/${NEOMUTT_RELEASE}/${NEOMUTT_RELEASE}-CHECKSUM" -P /tmp/ \
         && export GNUPGHOME="$(mktemp -d)" \
-        && gpg --keyserver ipv4.pool.sks-keyservers.net --recv-keys 86C2397270DD7A561263CA4E5FAF0A6EE7371805 \
-        && gpg --batch --verify /tmp/neomutt-${NEOMUTT_RELEASE}-CHECKSUM \
-        && cd /tmp/ && sha256sum -c /tmp/neomutt-${NEOMUTT_RELEASE}-CHECKSUM \
-        && rm -rf "$GNUPGHOME" /tmp/neomutt-${NEOMUTT_RELEASE}-CHECKSUM \
+        && gpg --keyserver keyserver.ubuntu.com --recv-keys 86C2397270DD7A561263CA4E5FAF0A6EE7371805 \
+        && gpg --verify /tmp/${NEOMUTT_RELEASE}-CHECKSUM \
+        && cd /tmp/ && sha256sum -c /tmp/${NEOMUTT_RELEASE}-CHECKSUM \
+        && rm -rf "$GNUPGHOME" /tmp/${NEOMUTT_RELEASE}-CHECKSUM \
         && mkdir -p /usr/src/neomutt \
-        && tar -xf /tmp/neomutt-${NEOMUTT_RELEASE}.tar.gz -C /usr/src/neomutt --strip-components 1 \
-        && rm /tmp/neomutt* \
+        && tar -xf /tmp/${NEOMUTT_RELEASE}.tar.gz -C /usr/src/neomutt --strip-components 1 \
+        && rm /tmp/*.tar.gz /tmp/*.zip \
         && cd /usr/src/neomutt \
         && gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
         && ./configure \
