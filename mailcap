@@ -1,2 +1,2 @@
-text/html; w3m -I %{charset} -T text/html -o confirm_qq=false; needsterminal;
-text/html; w3m -I %{charset} -T text/html -o confirm_qq=false; copiousoutput;
+text/html; w3m -I %{charset} -T text/html -o confirm_qq=false -o keymap_file=/home/user/.keymap; needsterminal;
+text/html; w3m -I %{charset} -T text/html -o confirm_qq=false -o keymap_file=/home/user/.keymap; copiousoutput;

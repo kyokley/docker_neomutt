@@ -85,13 +85,15 @@ RUN wget "https://github.com/neomutt/neomutt/archive/refs/tags/${NEOMUTT_RELEASE
         && cd $HOME \
         && pip install neovim
 
-COPY mailcap $HOME/.mailcap
 COPY nvim $HOME/.config/nvim
 RUN mkdir -p /root/.nvim/plugged $HOME/.nvim \
         && /usr/bin/nvim -c 'PlugInstall' -c 'qa' \
         && cp -r /root/.nvim/plugged $HOME/.nvim/plugged \
         && apk del .build-deps \
         && chown -R user:user $HOME
+
+COPY mailcap $HOME/.mailcap
+COPY keymap $HOME/.keymap
 
 WORKDIR $HOME
 USER user

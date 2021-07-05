@@ -1,0 +1,5 @@
+keymap  d  NEXT_PAGE
+keymap  J  NEXT_PAGE
+
+keymap  u  PREV_PAGE
+keymap  K  PREV_PAGE
